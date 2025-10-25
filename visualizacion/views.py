@@ -29,7 +29,7 @@ def mostrar_datos(request):
 
     # Actualizar columnas y registros
     columnas = df.columns.tolist()
-    registros = df.head(5001).values.tolist()  
+    registros = df.head(1000).values.tolist()  
 
     # Renderizar template
     return render(request, "visualizacion/index.html", {
