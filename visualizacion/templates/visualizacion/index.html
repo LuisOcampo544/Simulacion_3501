@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualización del DataSet</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'visualizacion/style.css' %}">
+</head>
+<body>
+    <h1>Visualización del DataSet NSL-KDD</h1>
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    {% for col in columnas %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in registros %}
+                    <tr>
+                        {% for valor in fila %}
+                            <td>{{ valor }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <footer>Mostrando 10,000 filas del archivo ARFF</footer>
+</body>
+</html>

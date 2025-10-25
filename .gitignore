@@ -1,0 +1,16 @@
+# Notebooks que NO quieres subir
+01_Introduccion_Numpy.ipynb
+02_Introduccion_Pandas.ipynb
+03_Matplotlib.ipynb
+04_Regresion_Lineal.ipynb
+05_Regresion_logistica.ipynb
+
+# Archivos personales
+df_Personas.csv
+df_Personas.html
+df_Personas.json
+Mi_Grafiquita_chida.png
+
+# Ignorar datasets excepto NSL-KDD
+datasets/*
+!datasets/datasets/NSL-KDD/
