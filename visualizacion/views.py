@@ -4,8 +4,8 @@ from django.shortcuts import render
 from pathlib import Path
 
 def mostrar_datos(request):
-    # Ruta al archivo ARFF
-    ruta = Path(__file__).resolve().parent.parent / "datasets" / "datasets" / "NSL-KDD" / "KDDTrain+.arff"
+    # Ruta al archivo ARFF reducido
+    ruta = Path(__file__).resolve().parent.parent / "datasets" / "datasets" / "NSL-KDD" / "KDDTrain_reducido.arff"
 
     # Verificar si el archivo existe
     if not ruta.exists():
@@ -29,7 +29,7 @@ def mostrar_datos(request):
 
     # Actualizar columnas y registros
     columnas = df.columns.tolist()
-    registros = df.head(101).values.tolist()
+    registros = df.head(101).values.tolist()  # Mostrar primeras 101 filas
 
     # Renderizar template
     return render(request, "visualizacion/index.html", {

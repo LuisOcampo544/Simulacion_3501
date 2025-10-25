@@ -10,6 +10,7 @@ df_Personas.csv
 df_Personas.html
 df_Personas.json
 Mi_Grafiquita_chida.png
+crear_arff_reducido.py
 
 # Ignorar datasets excepto NSL-KDD
 datasets/*
