@@ -2,32 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Visualización del DataSet</title>
+    <title>Visualización NSL-KDD</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'visualizacion/style.css' %}">
+    <link rel="stylesheet" href="{% static 'visualizacion/style.css' %}?v=7">
 </head>
 <body>
-    <h1>Visualización del DataSet NSL-KDD</h1>
-    <div class="tabla-contenedor">
-        <table>
-            <thead>
-                <tr>
-                    {% for col in columnas %}
-                        <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for fila in registros %}
-                    <tr>
-                        {% for valor in fila %}
-                            <td>{{ valor }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container-principal">
+        <!-- Título principal -->
+        <h1 class="titulo-principal">Visualización NSL-KDD</h1>
+
+        <!-- Accuracy centrada -->
+        <p class="accuracy">Accuracy del modelo: {{ accuracy|default:"No disponible" }}</p>
+
+        <!-- Formulario funcional -->
+        <form method="post" enctype="multipart/form-data" class="form-subida">
+            {% csrf_token %}
+            
+            <!-- Campo de archivo básico -->
+            <input type="file" name="arff_file" accept=".arff" required>
+
+            <!-- Botón de enviar -->
+            <button type="submit" class="btn-submit">Subir y Visualizar</button>
+
+            <!-- Mensaje de error -->
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+        </form>
+
+        <!-- Tabla de datos -->
+        {% if table %}
+        <div class="table-container">
+            {{ table|safe }}
+        </div>
+        {% endif %}
     </div>
-    <footer>Mostrando 1,000 filas del archivo ARFF</footer>
 </body>
 </html>

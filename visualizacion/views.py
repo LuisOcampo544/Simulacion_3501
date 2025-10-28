@@ -1,38 +1,59 @@
+from django.shortcuts import render
 import pandas as pd
 import arff
-from django.shortcuts import render
-from pathlib import Path
+import io
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import accuracy_score
 
 def mostrar_datos(request):
-    # Ruta al archivo ARFF reducido
-    ruta = Path(__file__).resolve().parent.parent / "datasets" / "datasets" / "NSL-KDD" / "KDDTrain_reducido.arff"
+    table_html = None
+    accuracy = None
+    error = None
 
-    # Verificar si el archivo existe
-    if not ruta.exists():
-        return render(request, "visualizacion/index.html", {
-            "error": f"Archivo no encontrado: {ruta}"
-        })
+    if request.method == "POST" and request.FILES.get("arff_file"):
+        uploaded_file = request.FILES["arff_file"]
+        filename = uploaded_file.name
 
-    # Cargar ARFF
-    with open(ruta, "r") as archivo:
-        data = arff.load(archivo)
+        # Validar extensión
+        if not filename.lower().endswith(".arff"):
+            error = "Error: Solo se permiten archivos con extensión .arff"
+        else:
+            try:
+                # Leer archivo ARFF desde bytes
+                arff_data = arff.load(io.StringIO(uploaded_file.read().decode("utf-8")))
+                df = pd.DataFrame(arff_data['data'], columns=[attr[0] for attr in arff_data['attributes']])
 
-    # Columnas
-    columnas = [attr[0] for attr in data["attributes"]]
+                # Generar tabla HTML con índice
+                table_html = df.to_html(classes="table table-striped", index=True)
 
-    # Crear DataFrame
-    df = pd.DataFrame(data["data"], columns=columnas)
+                # ------------------------------
+                # Calcular accuracy realista con cross-validation
+                # ------------------------------
+                if df.shape[1] >= 2:
+                    X = df.iloc[:, :-1]
+                    y = df.iloc[:, -1]
 
-    # Agregar índice como primera columna
-    df.reset_index(inplace=True)
-    df.rename(columns={"index": "ID"}, inplace=True)
+                    try:
+                        # Convertir categóricas en numéricas
+                        X_processed = pd.get_dummies(X)
+                        y_processed = pd.factorize(y)[0]
 
-    # Actualizar columnas y registros
-    columnas = df.columns.tolist()
-    registros = df.head(1000).values.tolist()  
+                        # Modelo RandomForest
+                        model = RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)
 
-    # Renderizar template
+                        # Cross-validation 5-fold
+                        scores = cross_val_score(model, X_processed, y_processed, cv=5)
+                        accuracy = f"{scores.mean()*100:.2f}%"
+
+                    except Exception as e:
+                        accuracy = f"No se pudo calcular accuracy: {str(e)}"
+
+            except Exception as e:
+                error = f"Error al leer el archivo: {str(e)}"
+
     return render(request, "visualizacion/index.html", {
-        "columnas": columnas,
-        "registros": registros
+        "table": table_html,
+        "accuracy": accuracy,
+        "error": error
     })
